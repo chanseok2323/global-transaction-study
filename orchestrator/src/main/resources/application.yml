@@ -1,0 +1,21 @@
+server:
+  port: 8010
+
+camel:
+  servlet:
+    mapping:
+      enabled: true
+      context-path: /api/*
+  component:
+    jms:
+      test-connection-on-startup: true
+      concurrent-consumers: 5
+  lra:
+    enabled: true
+    coordinator-url: http://localhost:8088
+    local-participant-url: http://localhost:8010/api
+  service:
+    lra.enabled: true
+  springboot:
+    main-run-controller: true
+    name: Orchestrator

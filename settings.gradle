@@ -1,0 +1,5 @@
+rootProject.name = 'saga-template'
+
+include 'orchestrator'
+include 'order'
+include 'payment'
