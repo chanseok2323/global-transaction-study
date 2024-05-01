@@ -1,4 +1,4 @@
-rootProject.name = 'saga-template'
+rootProject.name = 'global-transaction-study'
 
 include 'orchestrator'
 include 'order'
