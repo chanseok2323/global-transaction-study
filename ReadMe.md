@@ -31,6 +31,7 @@
   - NoSQL 에서는 제공이 안되며, 2PC를 지원하지 않는 데이터베이스가 있음
 
 ### JTA(Java Transaction API) 란
+============== JTA 진행 중 ==============
   - 플랫폼마다 상이한 트랜잭션 매니저들과 어플리케이션들이 상호작용할 수 있는 인터페이스를 정의, 트랜잭션 처리가 필요한 어플리케이션이 특정 벤더의 트랜잭션 매니저에 의존할 필요 없음
   - JTA 는 JTS(Java Transaction Service) 와 JTA(Java Transaction API) 로 구성, JTS 는 트랜잭션 관리자를 제공하고, JTA 는 트랜잭션 관리자와 트랜잭션을 처리하는 애플리케이션 간의 통신을 위한 API 를 제공한다.
   - Spring Boot 엣는 Atomikos, Bitronix JTA 구현체를 지원
@@ -41,6 +42,7 @@
     implementation 'com.atomikos:transactions-spring-boot-starter:6.0.0'
     implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
 ```
+============== JTA 진행 중 ==============
 
 ## Saga 패턴
 Saga 패턴이란 마이크로서비스들끼리 이벤트를 주고 받아 특정 마이크로서비스에서의 작업을 실패하면 이전까지의 작업이 완료된 마이크로서비스에게 보상 이벤트를 소싱함으로서 분산 환경에서 원자성을 보장하는 패턴
