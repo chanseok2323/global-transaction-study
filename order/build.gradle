@@ -1,5 +1,4 @@
 dependencies {
-//    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation ('org.springframework.boot:spring-boot-starter-web') {
         //톰캣 제거
         exclude module: 'spring-boot-starter-tomcat'
@@ -17,5 +16,4 @@ dependencies {
     implementation 'org.apache.camel.springboot:camel-servlet-starter:4.5.0'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
