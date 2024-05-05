@@ -1,6 +1,5 @@
 rootProject.name = 'global-transaction-study'
 
-include 'orchestrator'
 include 'order'
 include 'payment'
 include 'jta'

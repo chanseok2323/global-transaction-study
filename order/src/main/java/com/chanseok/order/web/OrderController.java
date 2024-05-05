@@ -2,6 +2,7 @@ package com.chanseok.order.web;
 
 import com.chanseok.order.dto.OrderDto;
 import com.chanseok.order.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 
 @RestController
+@RequiredArgsConstructor
 public class OrderController {
     private final Logger logger = LoggerFactory.getLogger(OrderController.class);
     private final OrderService orderService;
-
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @PostMapping("/order")
     public ResponseEntity<OrderDto.Response> createOrder() {

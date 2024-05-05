@@ -17,10 +17,19 @@ public class PaymentController {
 
     @PostMapping("/payment")
     public PaymentDto payment(@RequestBody Map<String, String> param, @RequestHeader Map<String, Object> headers) {
-        logger.info("orderId: {}", param);
-        logger.info("headers: {}", headers);
+        logger.info("payment --> orderId: {}", param);
+        logger.info("payment --> headers: {}", headers);
 
         if(true) throw new RuntimeException("Payment Error");
+
+        PaymentDto paymentDto1 = new PaymentDto(UUID.randomUUID().toString(), 3, 1000);
+        return paymentDto1;
+    }
+
+    @PostMapping("/find")
+    public PaymentDto find(@RequestBody Map<String, String> param, @RequestHeader Map<String, Object> headers) {
+        logger.info("find --> orderId: {}", param);
+        logger.info("find --> headers: {}", headers);
 
         PaymentDto paymentDto1 = new PaymentDto(UUID.randomUUID().toString(), 3, 1000);
         return paymentDto1;

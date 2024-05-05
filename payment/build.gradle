@@ -1,4 +1,19 @@
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation ('org.springframework.boot:spring-boot-starter-web') {
+        //톰캣 제거
+        exclude module: 'spring-boot-starter-tomcat'
+    }
+
+    // camel
+    compileOnly 'org.apache.camel.springboot:camel-spring-boot-dependencies:4.5.0'
+    implementation 'org.apache.camel:camel-netty-http:4.5.0'
+    implementation 'org.apache.camel.springboot:camel-spring-boot-starter:4.5.0'
+    implementation 'org.apache.camel.springboot:camel-undertow-starter:4.5.0'
+    implementation 'org.apache.camel.springboot:camel-lra-starter:4.5.0'
+    implementation 'org.apache.camel:camel-http-common:4.5.0'
+    implementation 'org.apache.camel.springboot:camel-http-starter:4.5.0'
+    implementation 'org.apache.camel.springboot:camel-servlet-starter:4.5.0'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }

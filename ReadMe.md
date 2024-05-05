@@ -30,12 +30,56 @@
     implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
 ```
 
-
-## Saga
-
+## Saga 패턴
 ### Camel + LRA 이용한 MicroService 간 보상 거래 구현
 ### 1. Docker를 이용한 LRA Coordinator 설치
 ```shell script
 docker run -i -p 8088:8080 quay.io/jbosstm/lra-coordinator
 ```
 
+### 2. build.gradle 에 Camel 의존성 추가
+Gradle 의존성 추가를 하였으며, Tomcat 을 사용하지 않고, Undertow를 사용하도록 설정을 변경하였습니다.
+```groovy
+implementation ('org.springframework.boot:spring-boot-starter-web') {
+    //톰캣 제거
+    exclude module: 'spring-boot-starter-tomcat'
+}
+compileOnly 'org.apache.camel.springboot:camel-spring-boot-dependencies:4.5.0'
+implementation 'org.apache.camel:camel-netty-http:4.5.0'
+implementation 'org.apache.camel.springboot:camel-spring-boot-starter:4.5.0'
+implementation 'org.apache.camel.springboot:camel-undertow-starter:4.5.0'
+implementation 'org.apache.camel.springboot:camel-lra-starter:4.5.0'
+implementation 'org.apache.camel:camel-http-common:4.5.0'
+implementation 'org.apache.camel.springboot:camel-http-starter:4.5.0'
+implementation 'org.apache.camel.springboot:camel-servlet-starter:4.5.0'
+```
+
+### 3. Camel LRA 설정
+```yml
+camel:
+  servlet:
+    mapping:
+      enabled: true
+      context-path: /*
+  lra:
+    enabled: true
+    coordinator-url: http://localhost:8088
+    local-participant-url: http://host.docker.internal:8080
+    local-participant-context-path: /lra-participant
+```
+
+### 4. Router 설정
+RouteBuilder 상속을 받아서, configure 메서드를 오버라이딩하여 라우터를 설정
+
+### 개발을 진행하면서 특이 사항
+compensation 을 이용해서 실패 시, 보상 처리를 테스트를 진행을 해보고 었습니다. 그런데 보상 거래가 정상적으로 실행이 안되고, Docker 를 이용하여 실행 한 LRA Coordinator 에서 아래 로그가 계속 찍히는 현상이 발생 하였습니다.
+```
+2024-05-05 15:54:32,146 INFO  [io.nar.lra] (Periodic Recovery) LRAParticipantRecord.doEnd(compensate) HTTP PUT at http://localhost:8001/lra-participant/compensate?id=SAGA+Simple+Test&Camel-Saga-Compensate=direct://cancelPayment failed for LRA http://localhost:8088/lra-coordinator/0_ffffac110002_8f7d_66379dff_12 (reason: jakarta.ws.rs.ProcessingException: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8001)
+```
+해당 부분은 Docker 네트워크에 대한 이해가 필요합니다. Docker 컨테이너는 기본적으로 격리된 환경을 제공하며 이 때문에 컨테이너는 자체적인 로컬 호스트를 가지고, 호스트 메신의 로컬 호스트와 다릅니다. 따라서 컨테이너 내부에서 localhost 또는 127.0.0.1를 사용하여 호스트 머신에 접근을 하려고 하면 안됩니다.
+```
+변경 전 : camel.lra.local-participant-url=http://localhost:8001
+변경 후 : camel.lra.local-participant-url=http://host.docker.internal:8001
+```
+그래서 현재는 간단하게 Saga 패턴을 구현을 해서 테스트를 하기 위한 목적이기 때문에 위와 같이 설정을 변경하여 테스트를 진행을 하였습니다.
+Docker 18.03 버전 이후부터는 host.docker.internal 이라는 호스트명을 사용하여 호스트 머신에 접근을 할 수 있습니다. Docker가 자동으로 호스트 머신의 IP주소로 해석을 해줍니다.

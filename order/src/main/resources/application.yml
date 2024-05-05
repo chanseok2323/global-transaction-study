@@ -1,5 +1,3 @@
-server:
-  port: 8080
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/inac1
@@ -13,3 +11,14 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
+camel:
+  servlet:
+    mapping:
+      enabled: true
+      context-path: /*
+  lra:
+    enabled: true
+    coordinator-url: http://localhost:8088
+    local-participant-url: http://host.docker.internal:8080
+    local-participant-context-path: /lra-participant
