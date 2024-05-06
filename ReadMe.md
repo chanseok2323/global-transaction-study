@@ -19,7 +19,7 @@
   - 2 Phase Commit의 약자로, 분산 환경에서의 트랜잭션 처리를 위한 프로토콜
   - 원자적 커밋 프로토콜(Atomic Commit Protocol) 의 일종으로, 트랜잭션을 커밋할지 롤백할지에 대한 분산 원자적 트랜잭션(Distributed Atomic Transaction) 에 관여하는 분산 알고리즘 중 하나
 
-![2PC.png](2PC.png)
+![2PC.png](images/2PC.png)
   - 위 그림처럼 서로 다른 리소스에 대한 요청을 원자적으로 처리하기 위해 1. Prepare Phase, 2. Commit Phase 두 단계로 나누어 처리하여 서로 다른 DB 간 정합성을 보장
   - 각각 서로 다른 리소스에 데이터를 추가/변경 등의 작업을 한 뒤 phase1 에서 모든 리소스에 반영할 수 있을지 물어보고 합의가 되지 않았을 경우 롤백을 하고, 합의가 되었을 경우 phase2 에서 커밋을 한다.
   - 하지만 그림을 통해서 알 수 있듯이 데이터를 추가/변경 등의 작업을 시작할 때부터 커밋될 때까지 Lock 이 걸림, 이로인해서 양 쪽 리소스를 함께 조회하더라도 커밋되지 않은 쪽은 락이 잡혀 때문에 두 리소스가 불일치된 상태로 조회되지 않는다. 락을 이용해서 정합성 보장
@@ -46,14 +46,14 @@
 
 ## Saga 패턴
 Saga 패턴이란 마이크로서비스들끼리 이벤트를 주고 받아 특정 마이크로서비스에서의 작업을 실패하면 이전까지의 작업이 완료된 마이크로서비스에게 보상 이벤트를 소싱함으로서 분산 환경에서 원자성을 보장하는 패턴
-![Saga Workflow.png](Saga%20Workflow.png)
+![Saga Workflow.png](images/Saga_Workflow.png)
 * 보상 트랜잭션 : 글로벌 트랜잭션을 여러 개의 로컬 트랜잭션으로 분리하여 각 로컬 트랜잭션은 독립적으로 실행하며, 모든 로컬 트랜잭션이 성공적으로 완료되면 글로벌 트랜잭션을 커밋하고, 실패 시, 그 서비스의 앞선 다른 서버스들에서 처리된 상태를 이전 상태로 되돌리게 하는 트랜잭션
 
 ### Saga 패턴 구조
 ### Choreography Based
   - 각 로컬트랜잭션이 다른 서비스의 로컬 트랜잭션을 이벤트 트리거 하는 방식, 중앙 집중형이 아닌, 이벤트를 교환하며 모든 서비스가 메시지 브로커를 통해 이벤트를 주고 받는 방식 
   - 로컬 트랜잭션을 처리하고, 다음 서비스에게 이벤트 전달(성공, 실패에 대한 부분을 큐에 전달)
-![Choreography.png](Choreography.png)
+![Choreography.png](images/Choreography.png)
 
 #### 장점 
   - 참가자가 거의 없고 조정 논리가 필요하지 않은 간단한 워크플로에 적합
@@ -70,7 +70,7 @@ Saga 패턴이란 마이크로서비스들끼리 이벤트를 주고 받아 특�
 ### Orchestration Based
   - 중앙 중계자(Orchestrator)가 각 마이크로 서비스의 로컬 트랜잭션을 관리하는 방식, 중앙 중계자는 각 마이크로 서비스의 로컬 트랜잭션을 관리 하는 방식으로, 모든 로컬 트랜잭션의 실행 순서와 결과를 관리 하며, 보상 트랜잭션 실행도 합니다
   - 트랜잭션에 관여하는 모든 서비스는 중계자(Orchestrator)에 의해서 점진적으로 트랜잭션을 수행하며 결과를 중계자에게 전달, 그렇게 마지막 트랜잭션이 정상적으로 끝나게 되면 중계자는 종료하면서 전체 트랜잭션 종료, 실패 시 해당 보생 트랜잭션 발행
-![Orchestration.png](Orchestration.png)
+![Orchestration.png](images/Orchestration.png)
 
 #### 장점
   - 시간이 지남에 따라 많은 참가자가 관여하거나 새 참가자가 추가되는 복잡한 워크플로에 적합
@@ -85,9 +85,14 @@ Saga 패턴이란 마이크로서비스들끼리 이벤트를 주고 받아 특�
 * 순환 종속성(Circular Dependency) : 두 개 이상의 모듈이 서로를 참조하거나 의존하는 상황, 코드의 구조를 복잡하게 만들고, 유지보수를 어렵게 하는 구조 예를 들어, 모듈 A가 모듈 B에 의존하고, 동시에 모듈 B가 모듈 A에 의존하는 경우 순환 종속성이 발생합니다. 이런 상황에서는 모듈 A와 B가 서로를 참조하므로, 하나의 모듈을 독립적으로 변경하거나 테스트하는 것이 어렵게 됩니다.
 
 ### Orchestration Based(Camel + LRA)를 이용한 MicroService 간 보상 거래 구현 (Spring Boot 3 기준)
+### 0. 구상 아키텍처
+![Camel+LRA_Architect.png](images/Camel+LRA_Architect.png)
+  1. Order 에서 주문을 받으면, Order 의 비즈니스 수행 로직 수행 후, Order Router 에서 Payment Route 를 호출
+  2. Payment Route 에서 에러를 발생 시켜서, compensation 을 이용해서 보상 로직을 수행하는지 확인
+
 ### 1. Docker 이용한 LRA Coordinator 설치
 ```shell script
-docker run -i -p 8088:8080 quay.io/jbosstm/lra-coordinator
+docker run -it --rm -e LOG_LEVEL=DEBUG -p 8088:8080 quay.io/jbosstm/lra-coordinator:latest
 ```
 
 ### 2. build.gradle 에 Camel 의존성 추가

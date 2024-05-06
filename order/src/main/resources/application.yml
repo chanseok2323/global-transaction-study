@@ -16,9 +16,8 @@ camel:
   servlet:
     mapping:
       enabled: true
-      context-path: /*
+      context-path: /api/*
   lra:
     enabled: true
     coordinator-url: http://localhost:8088
-    local-participant-url: http://host.docker.internal:8080
-    local-participant-context-path: /lra-participant
+    local-participant-url: http://host.docker.internal:8080/api

@@ -6,7 +6,7 @@ import org.apache.camel.http.common.HttpMethods;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderSagaRoute extends RouteBuilder {
+public class OrderRoute extends RouteBuilder {
 
     @Override
     public void configure() {
@@ -22,9 +22,7 @@ public class OrderSagaRoute extends RouteBuilder {
         ;
 
         from("direct:cancelOrder")
-                .saga()
                 .log("======= Cancel Order ======")
-                .end()
         ;
     }
 }
