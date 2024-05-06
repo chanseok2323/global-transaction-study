@@ -34,13 +34,12 @@
 ============== JTA 진행 중 ==============
   - 플랫폼마다 상이한 트랜잭션 매니저들과 어플리케이션들이 상호작용할 수 있는 인터페이스를 정의, 트랜잭션 처리가 필요한 어플리케이션이 특정 벤더의 트랜잭션 매니저에 의존할 필요 없음
   - JTA 는 JTS(Java Transaction Service) 와 JTA(Java Transaction API) 로 구성, JTS 는 트랜잭션 관리자를 제공하고, JTA 는 트랜잭션 관리자와 트랜잭션을 처리하는 애플리케이션 간의 통신을 위한 API 를 제공한다.
-  - Spring Boot 엣는 Atomikos, Bitronix JTA 구현체를 지원
+  - Spring Boot 에는 Atomikos, Bitronix JTA 구현체를 지원
 
-### Atomikos 를 이용하여 트랜잭션 처리 구현
-  1. Atomikos 라이브러리 추가 (Spring Boot 3 기준)
+### Atomikos 를 이용하여 트랜잭션 처리 구현(Spring Boot 3 기준)
+  1. Atomikos 라이브러리 추가
 ```groovy
-    implementation 'com.atomikos:transactions-spring-boot-starter:6.0.0'
-    implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
+     implementation 'com.atomikos:transactions-spring-boot3-starter:6.0.0'
 ```
 ============== JTA 진행 중 ==============
 
